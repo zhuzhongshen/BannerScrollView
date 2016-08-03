@@ -10,6 +10,14 @@
 
 import UIKit
 
+//定义协议
+@objc protocol BannerScrollViewDelegate :NSObjectProtocol{
+    //代理方法
+    optional func bannerClickIndex(index:Int)
+    
+}
+
+
 let CellIdtentifier = "BannerScrollCollectionViewCell"
 
 class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout {
@@ -19,6 +27,9 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     typealias bannerBlock = (index:NSInteger) -> Void
     //2. 声明一个变量
     var callBack = bannerBlock?()
+    
+    //
+    var delegate:BannerScrollViewDelegate?
     
     var flowLayout:UICollectionViewFlowLayout!
     var mainView:UICollectionView!
@@ -204,6 +215,11 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if (callBack != nil) {
             callBack!(index: indexPath.row)
+        }
+        if (delegate != nil) {
+            
+            delegate?.bannerClickIndex!(indexPath.row)
+            
         }
     }
     
