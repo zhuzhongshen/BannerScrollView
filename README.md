@@ -5,15 +5,20 @@ swift版无限轮播
         
         self.view.backgroundColor = UIColor.whiteColor()
         banner =  BannerScrollView(frame:CGRectMake(0,0,SCREEN_WIDTH,200))
+        //图片数据
         banner.imageGroups = images
         banner.pageControlAliment = UIControlContentHorizontalAlignment.Left
+        //是否自动滚动
         banner.autoScroll = true
+        //自动滚动时间
         banner.autoScrollTimeInterval = 1.0
+        //UIPageControl.currentPageIndicatorTintColor
         banner.currentPageDotColor = UIColor.whiteColor()
+        //UIPageControl.pageIndicatorTintColor
         banner.pageDotColor = UIColor.lightGrayColor()
         self.view.addSubview(banner)
         //代理 需实现 BannerScrollViewDelegate
-          banner.delegate = self
+        banner.delegate = self
         
         /* 闭包实现点击
         banner.callBackBlock { (index) in
