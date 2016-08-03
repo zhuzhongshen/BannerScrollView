@@ -83,6 +83,17 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
         }
         
     }
+    
+    var titleStringGroup = [NSString](){
+        
+        didSet{
+            
+            self.mainView.reloadData()
+            
+        }
+        
+    }
+    
     //显示正常的图片
     var imageContentMode:UIViewContentMode = UIViewContentMode.ScaleToFill{
         
@@ -113,6 +124,44 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     var pageDotColor:UIColor = UIColor.lightGrayColor(){
         didSet{
             self.pageControl.pageIndicatorTintColor = pageDotColor
+            
+        }
+        
+    }
+    var bannerTitleHeight:CGFloat = 44{
+        
+        didSet{
+            
+        }
+    }
+    var titleBackGroudColor : UIColor = UIColor.clearColor(){
+        
+        didSet{
+        }
+        
+    }
+    
+    var titleTextColor:UIColor = UIColor.blackColor(){
+        
+        didSet{
+            
+            
+        }
+    }
+    
+    var titleFont:UIFont = UIFont.systemFontOfSize(14)
+        {
+        
+        didSet{
+            
+            
+        }
+    }
+    
+    var showPageControl:Bool = true{
+        
+        didSet{
+            
             
         }
         
@@ -180,7 +229,9 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
         if self.localizationImageNamesGroup.count>0 {
             pageC.numberOfPages = self.localizationImageNamesGroup.count
         }
+        print("\(self.showPageControl)")
         
+        pageC.hidden = !self.showPageControl
         pageC.pageIndicatorTintColor = UIColor.lightGrayColor()
         pageC.currentPageIndicatorTintColor = UIColor.whiteColor()
         self.addSubview(pageC)
@@ -260,6 +311,18 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
             cell.imageV.image = UIImage(named: imageNamed as String)
             cell.imageV.contentMode = self.imageContentMode
         }
+        //文字
+        if self.titleStringGroup.count>0 {
+            let actualItemIndex = indexPath.item % self.titleStringGroup.count
+            let str:NSString = self.titleStringGroup[actualItemIndex]
+            
+            cell.titleV.text = str as String
+            cell.titleTextColor = self.titleTextColor
+            cell.titleBackGroudColor = self.titleBackGroudColor
+            cell.titleFont = self.titleFont
+            cell.titleHeight = self.bannerTitleHeight
+        }
+        
         
         return cell
     }
