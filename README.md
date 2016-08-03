@@ -12,9 +12,21 @@ swift版无限轮播
         banner.currentPageDotColor = UIColor.whiteColor()
         banner.pageDotColor = UIColor.lightGrayColor()
         self.view.addSubview(banner)
+        //代理 需实现 BannerScrollViewDelegate
+          banner.delegate = self
+        
+        /* 闭包实现点击
         banner.callBackBlock { (index) in
             print(index)
         }
+        */
+      //代理方法实现  
+       func bannerClickIndex(index: Int) {
+        
+        print(index)
+      }
+    
+        
         //本地图片
        ....
        //标题
