@@ -18,6 +18,7 @@ import UIKit
 }
 
 
+
 let CellIdtentifier = "BannerScrollCollectionViewCell"
 
 class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout {
@@ -28,8 +29,9 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     //2. 声明一个变量
     var callBack = bannerBlock?()
     
-    //
+    //3.0
     var delegate:BannerScrollViewDelegate?
+    
     
     var flowLayout:UICollectionViewFlowLayout!
     var mainView:UICollectionView!
@@ -70,6 +72,23 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
             
             self.setupPageControl()
             self.reloadData()
+        }
+        
+    }
+    //本地图片
+    var localizationImageNamesGroup = [NSString](){
+        didSet{
+            self.setupPageControl()
+            self.reloadData()
+        }
+        
+    }
+    //显示正常的图片
+    var imageContentMode:UIViewContentMode = UIViewContentMode.ScaleToFill{
+        
+        didSet{
+            
+            self.mainView.reloadData()
         }
         
     }
@@ -154,7 +173,14 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
         
         let pageC = UIPageControl()
         pageC.backgroundColor = UIColor.clearColor()
-        pageC.numberOfPages = imageGroups.count
+        
+        if self.imageGroups.count>0 {
+            pageC.numberOfPages = self.imageGroups.count
+        }
+        if self.localizationImageNamesGroup.count>0 {
+            pageC.numberOfPages = self.localizationImageNamesGroup.count
+        }
+        
         pageC.pageIndicatorTintColor = UIColor.lightGrayColor()
         pageC.currentPageIndicatorTintColor = UIColor.whiteColor()
         self.addSubview(pageC)
@@ -170,11 +196,25 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     private func reloadData() {
         
         
-        if self.imageGroups.count > 1 {
-            self.actualItemCount =  self.needEndlessScroll ? self.imageGroups.count * imageTimes : self.imageGroups.count
-        }else {
-            self.actualItemCount = 1
+        if self.imageGroups.count>0 {
+            
+            if self.imageGroups.count > 1 {
+                self.actualItemCount =  self.needEndlessScroll ? self.imageGroups.count * imageTimes : self.imageGroups.count
+            }else {
+                self.actualItemCount = 1
+            }
+            
         }
+        
+        if self.localizationImageNamesGroup.count>0 {
+            if self.localizationImageNamesGroup.count > 1 {
+                self.actualItemCount =  self.needEndlessScroll ? self.localizationImageNamesGroup.count * imageTimes : self.localizationImageNamesGroup.count
+            }else {
+                self.actualItemCount = 1
+            }
+        }
+        
+        
         
         //重新加载数据
         self.mainView.reloadData()
@@ -188,6 +228,8 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
         super.layoutSubviews()
         print("layoutSubviews")
     }
+    
+    
     override func willMoveToSuperview(newSuperview: UIView?) {
         super.willMoveToSuperview(newSuperview)
     }
@@ -201,11 +243,24 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(CellIdtentifier, forIndexPath: indexPath) as! BannerScrollCollectionViewCell
-        let actualItemIndex = indexPath.item % imageGroups.count
         
-        let url:NSString = imageGroups[actualItemIndex]
+        if self.imageGroups.count>0 {
+            
+            let actualItemIndex = indexPath.item % self.imageGroups.count
+            
+            let url:NSString = self.imageGroups[actualItemIndex]
+            cell.imageV.contentMode = self.imageContentMode
+            cell.imageV.sd_setImageWithURL(NSURL(string: "\(url)"), placeholderImage: UIImage(named: ""))
+        }
+        //本地图片
+        if self.localizationImageNamesGroup.count>0 {
+            let actualItemIndex = indexPath.item % self.localizationImageNamesGroup.count
+            let imageNamed:NSString = localizationImageNamesGroup[actualItemIndex]
+            print(imageNamed)
+            cell.imageV.image = UIImage(named: imageNamed as String)
+            cell.imageV.contentMode = self.imageContentMode
+        }
         
-        cell.imageV.sd_setImageWithURL(NSURL(string: "\(url)"), placeholderImage: UIImage(named: ""))
         return cell
     }
     required init?(coder aDecoder: NSCoder) {
@@ -221,6 +276,7 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
             delegate?.bannerClickIndex!(indexPath.row)
             
         }
+        
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -230,6 +286,13 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
             let indexOnPageControl:Int = itemIndex % self.imageGroups.count
             self.pageControl.currentPage = indexOnPageControl
         }
+        
+        if self.localizationImageNamesGroup.count>0 {
+            let itemIndex:Int = self.currentIndex()
+            let indexOnPageControl:Int = itemIndex % self.localizationImageNamesGroup.count
+            self.pageControl.currentPage = indexOnPageControl
+        }
+        
         
     }
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
@@ -252,7 +315,7 @@ class BannerScrollView: UIView,UICollectionViewDataSource,UICollectionViewDelega
     }
     //定时器自动滚动
     func automaticScroll(){
-
+        
         
         if 0 == self.actualItemCount{
             
